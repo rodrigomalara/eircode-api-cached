@@ -1,56 +1,26 @@
-buildscript {
-	repositories {
-		mavenCentral()
-	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.0.RELEASE")
-		classpath('se.transmode.gradle:gradle-docker:1.2')
-	}
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '2.7.5'
+	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 }
 
-group = 'rodrigomalara'
+sourceCompatibility = 11
+targetCompatibility = 11
 
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'spring-boot'
-apply plugin: 'docker'
-apply plugin: 'jacoco'
+dependencies {
+	implementation('org.springframework.boot:spring-boot-starter-web')
+	implementation('org.springframework.boot:spring-boot-starter-cache')
+	implementation('javax.cache:cache-api:1.0.0')
+	implementation('org.springframework.boot:spring-boot-starter-data-redis')
+	implementation('redis.clients:jedis:4.3.1')
+	// https://mvnrepository.com/artifact/javax.validation/validation-api
+	implementation('javax.validation:validation-api:2.0.1.Final')
 
-jar {
-	baseName = 'eircode-api-cached'
-	version =  '0.1.0'
+
+	testImplementation('org.springframework.boot:spring-boot-starter-test')
+	testImplementation('uk.co.datumedge:hamcrest-json:0.2')
 }
 
 repositories {
 	mavenCentral()
-}
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-dependencies {
-	compile 'org.springframework.boot:spring-boot-starter-web'
-	compile 'org.springframework.boot:spring-boot-starter-cache'
-	compile 'javax.cache:cache-api:1.0.0'
-	compile 'org.springframework.data:spring-data-redis'
-	compile 'redis.clients:jedis:2.6.1'
-	testCompile 'org.springframework.boot:spring-boot-starter-test'
-	testCompile 'uk.co.datumedge:hamcrest-json:0.2'
-}
-
-task buildDocker(type: Docker, dependsOn: build) {
-	applicationName = jar.baseName
-	dockerfile = file('src/main/docker/Dockerfile')
-	doFirst {
-	  copy {
-		from jar
-		into stageDir
-	  }
-	}
-  }
-
-jacocoTestReport {
-	reports {
-		xml.enabled true
-	}
 }
